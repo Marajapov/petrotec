@@ -22,14 +22,22 @@
           <button type="button" class="an-btn an-btn-icon dropdown-toggle"
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="an-profile-img" style="background-image: url('<?= base_url(); ?>admin_assets/assets//img/users/user5.jpeg');"></span>
-            <span class="an-user-name">Admin</span>
+            <span class="an-user-name">
+            <?php
+              if(isset($this->data)){
+                echo $this->data['username'];
+              }else{
+                echo 'Admin';
+              }
+            ?>
+            </span>
             <span class="an-arrow-nav"><i class="icon-arrow-down"></i></span>
           </button>
           <div class="dropdown-menu">
             <p class="an-info-count">Profile Settings</p>
             <ul class="an-profile-list">
               <li><a href="#"><i class="icon-user"></i>Settings</a></li>
-              <li><a href="#"><i class="icon-download-left"></i>Log out</a></li>
+              <li><a href="<?php if(isset($this->data)) { echo base_url('Login/logout'); } else{ echo '#';}?>"><i class="icon-download-left"></i>Log out</a></li>
             </ul>
           </div>
         </div>
@@ -181,6 +189,35 @@
               <li><a href="#">Payrolls</a></li>
             </ul>
 		  </li>
+      <!-- Request -->
+      <li class="an-nav-item <?= ($this->uri->segment(1) == 'Request') ? 'nav-open' : ''; ?>">
+			<a class=" js-show-child-nav" href="#">
+              <i class="icon-chart-stock"></i>
+              <span class="nav-title">Request
+			  <span class="an-arrow-nav"><i class="icon-arrow-down"></i></span>
+			  </span>
+            </a>
+			
+			<ul class="an-child-nav js-open-nav" <?= ($this->uri->segment(1) == 'Request') ? 'style="display: block;"' : ''; ?>>
+              <li><a href="<?= base_url('Request/index'); ?>" <?= ($this->uri->segment(2) == 'index') ? 'class="active_menu"' : ''; ?>>All Request</a></li>
+              
+            </ul>
+      </li>
+      <!-- User 
+      <li class="an-nav-item <?= ($this->uri->segment(1) == 'User') ? 'nav-open' : ''; ?>">
+			<a class=" js-show-child-nav" href="#">
+              <i class="icon-chart-stock"></i>
+              <span class="nav-title">User
+			  <span class="an-arrow-nav"><i class="icon-arrow-down"></i></span>
+			  </span>
+            </a>
+			
+			<ul class="an-child-nav js-open-nav" <?= ($this->uri->segment(1) == 'User') ? 'style="display: block;"' : ''; ?>>
+              <li><a href="<?= base_url('User/index'); ?>" <?= ($this->uri->segment(2) == 'index') ? 'class="active_menu"' : ''; ?>>All Users</a></li>
+              
+            </ul>
+      </li> -->
+      <!-- Accounting -->
 		  <li class="an-nav-item ">
 			<a class=" js-show-child-nav" href="#">
               <i class="icon-chart-stock"></i>
@@ -209,7 +246,7 @@
 			  </span>
             </a>
 			
-			<ul class="an-child-nav js-open-nav">
+			<ul class="an-child-nav js-open-nav <?= ($this->uri->segment(1) == 'User') ? 'style="display: block;"' : ''; ?>">
               <li><a href="#">General</a></li>
               <li><a href="#">Security</a></li>
               <li><a href="#">Notification</a></li>
