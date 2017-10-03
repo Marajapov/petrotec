@@ -1,0 +1,14 @@
+.an-masonry-layout {
+  .grid-item {
+    @media (max-width: $screen-md) {
+      width: 50%;
+      &.col-md-12 {
+        width: 100%;
+      }
+    }
+    @media (max-width: $screen-sm) {
+      width: 100%;
+    }
+  }
+}
+
