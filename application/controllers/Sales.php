@@ -41,6 +41,19 @@ class Sales extends CI_Controller{
 		$this->db->insert('sales', $ins);
 
 		$id=$this->db->insert_id();
+
+		$installment_date = $this->input->post('installment_date');
+		$amount = $this->input->post('amount');
+		$next_installment = $this->input->post('next_installment');
+		$next_amount = $this->input->post('next_amount');
+		$insert_installment = array(
+			'salesid'=>$id,
+			'paid'=>$amount,
+			'date'=>$installment_date,
+			'next_installment'=> $next_installment,
+		);
+		$this->db->insert('installment',$insert_installment);
+
 		$productid[] = $this->input->post('product');
 		$quantity[] = $this->input->post('quantity');
 		$price[] = $this->input->post('price');
@@ -83,28 +96,39 @@ class Sales extends CI_Controller{
 
 	public function change_quantity()
 	{
-		$quantity = $_POST['quantity'];
+		$quantity = $_POST['quantity1'];
 		$productId = $_POST['productId'];
 		$companyId = $_POST['companyId'];
 		$row = $this->db->get_where('inventory', array('companyid' => $companyId,'productid'=>$productId))->row();
-		if($quantity <= $row->qty){
-			echo '
-					<label style="font-size: 9px;">Quantity in Inventory</label>
-					<div class="alert alert-success" style="font-size: 12px; padding: 0 15px; margin-top: 5px;">
-						<strong>'.$row->qty.'!</strong>
-					</div>';
+		
+		if(!empty($row))
+		{
+			if($quantity <= $row->qty){
+				echo '
+						<label style="font-size: 9px;">Quantity in Inventory</label>
+						<div class="alert alert-success" style="font-size: 12px; padding: 0 15px; margin-top: 5px;">
+							<strong>'.$row->qty.'!</strong>
+						</div>';
+			}else{
+				echo '
+						<label style="font-size: 9px;">Quantity in Inventory</label>
+						<div class="alert alert-danger" style="font-size: 12px; padding: 0 15px; margin-top: 5px;">
+							<strong>'.$row->qty.'!</strong>
+						</div>';
+			}
 		}else{
 			echo '
-					<label style="font-size: 9px;">Quantity in Inventory</label>
-					<div class="alert alert-danger" style="font-size: 12px; padding: 0 15px; margin-top: 5px;">
-						<strong>'.$row->qty.'!</strong>
-					</div>';
+						<label style="font-size: 9px;">Quantity in Inventory</label>
+						<div class="alert alert-danger" style="font-size: 12px; padding: 0 15px; margin-top: 5px;">
+							<strong>0!</strong>
+						</div>';
 		}
 	}
 
 	public function addItem()
 	{
 		$data = $_POST['i'];
+		$priceText = 'price';
 		$product = $this->db->get('product')->result();
 		$options ='';
 		
@@ -161,9 +185,40 @@ class Sales extends CI_Controller{
 		$(document).ready(function(){ 
 		$("#deleteButton_'.$data.'").click(function () {
 			$("#deleteItem_'.$data.'").remove();
+		var i=1;
+		var qty;
+		var pp;
+		var result;
+		var price;
+		var quantity;
+		var a,b;
+		var sum = 0;
+		var count = $( "input[id*='.$priceText.']" ).length;
+		
+		if(count ==1){
+			quantity = $("#quantityId1").val();
+			price = $("#price1").val();
+			result = quantity * price;
+			$("#total").html(result);
+		}else if($("#price"+count).val() != "")
+		{
+			for(i=1; i<=count; i++)
+			{
+				
+				qty = parseInt($("#quantityId"+i).val());
+				a = parseInt(qty);
+				pp = parseInt($("#price"+i).val());
+				b = parseInt(pp);
+				sum += (a*b);
+			}
+			
+			
+			$("#total").html(sum);
+		}
 			
 		});
 	});
+
 
 			
 		</script>

@@ -58,7 +58,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Product</label>
-                        <select class="form-control" name="product[]" id="productId">
+                        <select class="form-control" name="product[]" id="productId_1" required disabled>
                             <?php if(!empty($product)):
                                 foreach($product as $c): ?>
                                     <option value="<?= $c->id; ?>"><?= $c->name; ?></option>
@@ -69,7 +69,8 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Quantity</label>
-                        <input type="text" id="quantityId" name="quantity[]" class="form-control" />
+                        <input type="text" id="quantityId1" name="quantity[]" class="form-control" disabled />
+                        
 					</div>
 				</div>
 			</div>
@@ -92,7 +93,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Sales Person</label>
-						<select class="form-control" name="employee" id="employee_select">
+						<select class="form-control selectpicker" name="employee" id="employee_select">
 						</select>
 					</div>
 				</div>
@@ -101,7 +102,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Price</label>
-				        <input type="text" name="price[]" class="form-control" id="price" />
+				        <input type="text" name="price[]" class="form-control" id="price1" disabled/>
 					</div>
 				</div>
 				<div class="col-md-6">
@@ -118,8 +119,8 @@ $product = $this->db->get('product')->result();
 	<!-- Add Item row-->
 	<div class="row">
 		<div class="col-md-12">
-			<div class="row">
-				<div class="col-md-2 off-set-10 pull-right">
+			<div class="row" >
+				<div class="col-md-2 off-set-10 pull-right hide" id="hideAddButton">
 					<label>Add Item</label>
 	<input type="button" value="addItem" id="addItem" class="form-control btn btn-info" />
 				</div>
@@ -135,8 +136,57 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-2 off-set-10 pull-right">
 					<label for="">Total</label>
 					<div class="span" id="total"></div>
+					<div class="span" id="showcase"></div>
 				</div>
 			</div>
+		</div>
+	</div>
+	<br>
+
+	<div class="row">
+		<div class="col-md-12">
+		<h2>Installment</h2>
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<div class="form-group">
+                            <label>Date:</label>
+                            <input name="installment_date" type="text" class="form-control form-control-lg datepicker_from" id="lgFormGroupInput" >
+                        </div>
+					</div>
+				</div>
+
+				<div class="col-md-4">
+					<div class="form-group">
+						<div class="form-group">
+                            <label>Amount:</label>
+                            <input name="amount" type="text" class="form-control form-control-lg" id="lgFormGroupInput" >
+                        </div>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<div class="form-group">
+                            <label>Next Installment:</label>
+                            <input name="next_installment" type="text" class="form-control form-control-lg datepicker_from" id="lgFormGroupInput" >
+                        </div>
+					</div>
+				</div>
+
+				<div class="col-md-4">
+					<div class="form-group">
+						<div class="form-group">
+                            <label>Rest:</label>
+                            <input name="next_amount" type="text" class="form-control form-control-lg" id="lgFormGroupInput" >
+                        </div>
+					</div>
+				</div>
+			</div>
+
 		</div>
 	</div>
 	<br>
