@@ -16,6 +16,16 @@
 		$('.datepicker').datepicker({
 			format: 'yyyy-mm-dd',
 		});
+		// datepicker_sales
+		$('.datepicker_sales').datepicker({
+			format: 'yyyy-mm-dd',
+		});
+		
+		
+		
+		/*
+
+
 		// From
 		$('.datepicker_from').datepicker({
 			format: 'yyyy-mm-dd',
@@ -24,7 +34,7 @@
             // Revalidate the date field
             $('#eventForm').formValidation('revalidateField', 'request_from');
         });
-		// From
+		// To
 		$('.datepicker_to').datepicker({
 			format: 'yyyy-mm-dd',
 			minDate: moment(),
@@ -61,7 +71,13 @@
 					}
 				}
 			}
-		});
+		});  
+		
+		
+		
+		*/
+
+
 
 	});
 	$(function () {
@@ -108,7 +124,46 @@ $( document ).ready(function() {
 	});
 
     $('#register').validator();
-	// Added by Abakan end
+
+	// change supplier
+	$(document).ready(function(){ 
+		$("#companyId").change(function(){ 
+		var companyId = $(this).val(); 
+		var dataString = "companyId="+companyId;
+
+		$.ajax({ 
+			type: "POST", 
+			url: "<?= base_url('Sales/fetch_data'); ?>", 
+			data: dataString, 
+			success: function(result){
+			$("#employee_select").html(result);
+			}
+		});
+
+		});
+	});
+	// quantity value
+	 $('#quantityId').on('input',function(e){
+		 var productId = $('#productId').val();
+		 var companyId = $('#companyId').val();
+		 var quantity = $(this).val(); 
+		 var dataString = "quantity="+quantity+"&productId="+productId+"&companyId="+companyId;
+
+		$.ajax({ 
+			type: "POST", 
+			url: "<?= base_url('Sales/change_quantity'); ?>", 
+			data: dataString, 
+			success: function(result){
+				$('#quantity_show').removeClass('hide');
+				$('#quantity_show').addClass('show');
+				$("#quantity_show").html(result);
+			}
+		});
+    });
+	
+	//
+	// end
 </script>
+
 </body>
 </html>

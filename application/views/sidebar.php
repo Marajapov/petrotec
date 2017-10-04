@@ -87,9 +87,9 @@
 			  </span>
             </a>
 			 <ul class="an-child-nav js-open-nav">
-              <li><a href="#">All Sales</a></li>
+              <li><a href="<?= base_url('Sales/index'); ?>">All Sales</a></li>
               <li><a href="#">All Invoice</a></li>
-              <li><a href="<?= base_url('sales/generateinvoice'); ?>">Generate Invoice</a></li>
+              <li><a href="<?= base_url('Sales/generateinvoice'); ?>">Generate Invoice</a></li>
               <li><a href="#">Sales history</a></li>
             </ul>
 		  </li>
