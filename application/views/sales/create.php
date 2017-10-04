@@ -31,9 +31,6 @@ $product = $this->db->get('product')->result();
 <div style="padding:10px 180px; width:100%">
 	<h4>Add</h4>
 	<br />
-
-
-
     <div class="row">
 		<div class="col-md-6">
 			<div class="row">
@@ -61,7 +58,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Product</label>
-                        <select class="form-control" name="product" id="productId">
+                        <select class="form-control" name="product[]" id="productId">
                             <?php if(!empty($product)):
                                 foreach($product as $c): ?>
                                     <option value="<?= $c->id; ?>"><?= $c->name; ?></option>
@@ -72,7 +69,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Quantity</label>
-                        <input type="text" id="quantityId" name="quantity" class="form-control" />
+                        <input type="text" id="quantityId" name="quantity[]" class="form-control" />
 					</div>
 				</div>
 			</div>
@@ -83,7 +80,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Company</label>
-                        <select class="form-control" name="type" id="companyId">
+                        <select class="form-control" name="company" id="companyId">
                             <option value="0">--Select--</option>
                             <?php if(!empty($company)):
                                 foreach($company as $c): ?>
@@ -95,7 +92,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Sales Person</label>
-						<select class="form-control" name="supplier" id="employee_select">
+						<select class="form-control" name="employee" id="employee_select">
 						</select>
 					</div>
 				</div>
@@ -104,19 +101,45 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Price</label>
-				        <input type="text" name="price" class="form-control" />
+				        <input type="text" name="price[]" class="form-control" id="price" />
 					</div>
 				</div>
 				<div class="col-md-6">
-					<div class="form-group">
-						<label>Total</label>
-						<input type="text" name="dob" class="form-control datepicker" />
+					<div class="form-group" id="quantity_show">
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	<!-- add newProduct -->
+	<div class="row newProduct">
+		
+	</div>
+	<!-- Add Item row-->
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-2 off-set-10 pull-right">
+					<label>Add Item</label>
+	<input type="button" value="addItem" id="addItem" class="form-control btn btn-info" />
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<hr />
+	
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-2 off-set-10 pull-right">
+					<label for="">Total</label>
+					<div class="span" id="total"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br>
 	
 	<div class="row">
 		<div class="col-md-6">

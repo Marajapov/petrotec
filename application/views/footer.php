@@ -124,6 +124,12 @@ $( document ).ready(function() {
 	});
 
     $('#register').validator();
+    $(document).ready(function(){ 
+		var companyId = $('companyId').val();
+		if(!companyId){
+			$('#quantity').prop('disabled');
+		}
+	});
 
 	// change supplier
 	$(document).ready(function(){ 
@@ -149,17 +155,58 @@ $( document ).ready(function() {
 		 var quantity = $(this).val(); 
 		 var dataString = "quantity="+quantity+"&productId="+productId+"&companyId="+companyId;
 
-		$.ajax({ 
-			type: "POST", 
-			url: "<?= base_url('Sales/change_quantity'); ?>", 
-			data: dataString, 
-			success: function(result){
-				$('#quantity_show').removeClass('hide');
-				$('#quantity_show').addClass('show');
-				$("#quantity_show").html(result);
-			}
-		});
+		if(companyId != 0)
+		{
+			$.ajax({ 
+				type: "POST", 
+				url: "<?= base_url('Sales/change_quantity'); ?>", 
+				data: dataString, 
+				success: function(result){
+					$('#quantity_show').addClass('show');
+					$("#quantity_show").html(result);
+				}
+			}); // End Ajax
+		} // end if
     });
+	// Total
+	$('#quantityId, #price').on('input',function(e){
+		 var quantity = $('#quantityId').val();
+		 var price = $('#price').val();
+		 var result = quantity * price;
+		 
+		 $('#total').html(result);
+    });
+	// $(document).ready(function () {
+	// 	var quantity = $('#quantityId').val();
+	// 	var price = $('#price').val();
+	// 	var result = quantity * price;
+		
+	// 	$('#total').html(result);
+	// });
+
+	// Add Item
+	$(document).ready(function(){ 
+		var i = 1;
+		$('#addItem').click(function () {
+			i++;
+			var url = "<?= base_url('Sales/addItem'); ?>";
+			var dataString = 'i='+i;
+			$.ajax
+			({
+				type: "POST",
+				url: url,
+				data: dataString,
+				cache: false,
+				success: function (data) {
+					$('.newProduct').append(data);
+					//$('.selectpicker').selectpicker('refresh');
+				}
+			});
+		});
+	});
+
+	
+
 	
 	//
 	// end

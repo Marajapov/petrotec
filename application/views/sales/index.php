@@ -13,20 +13,44 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
+                        <th>Date</th>
+                        <th>Agent Name</th>
+                        <th>Invoice No</th>
+                        <th>Customer</th>
+                        <th>Date of Sale</th>
+                        <th>Balance</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                <?php if(!empty($table)): foreach($table as $ap): ?>
+                <?php if(!empty($table)){
+                foreach($table as $ap){
+                    $customer = $this->db->get_where('customer',array('id' => $ap->customerid))->row();
+                    $employee = $this->db->get_where('employee',array('id' => $ap->employee_id))->row();
+                    $balance = $this->db->get_where('installment',array('salesid' => $ap->id))->row();
+                    
+                   
+                ?>
                     <tr>
-                        <td><?= $ap->firstname; ?></td>
-                        <td><?= $ap->email; ?></td>					
-                        <td><a href="<?= base_url('User/edit/'.$ap->id); ?>" class="btn btn-primary">Edit</a>
-                        <a onclick="return confirm('Are you sure?')" href="<?= base_url('User/delete/'.$ap->id); ?>" class="btn btn-danger">Delete</a></td>
+                        <td><?= date('d/m/Y',strtotime($ap->date)); ?></td>
+                        <td><?= $employee->firstname; ?></td>
+                        <td>000<?= $ap->id; ?></td>		
+                        <td><?= $customer->fname; ?></td>			
+                        <td><?= date('d/m/Y',strtotime($ap->date_created)); ?></td>			
+                        <td> <?=(!empty($balance))? $balance->paid:'00';?></td>			
+                        <td> 
+                        <?php
+                            if(!empty($balance)){
+                                echo $balance->status;
+                            }else{
+                                echo 'pending';
+                            }
+                        ?></td>			
+                        <td><a href="<?= base_url('Sales/show/'.$ap->id); ?>" class="btn btn-primary">View</a>
+
                     </tr>
-                <?php endforeach; endif; ?>
+                <?php } } ?>
                 </tbody>
 		    </table>
         </div><!-- end of col-md-12-->
