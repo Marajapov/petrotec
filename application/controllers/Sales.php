@@ -2,9 +2,8 @@
 class Sales extends CI_Controller{
 	function __construct(){
 		parent::__construct();
+		$this->load->model('Sales_model');
 	}
-
-	// index
 	public function index() 
 	{
 		$this->load->view('header');
@@ -12,7 +11,6 @@ class Sales extends CI_Controller{
 		$this->load->view('sales/index');
 		$this->load->view('footer');
 	}
-
 	public function create()
 	{
 		$this->load->view('header');
@@ -20,8 +18,6 @@ class Sales extends CI_Controller{
 		$this->load->view('sales/create');
 		$this->load->view('footer');
 	}
-
-	
 	public function store()
 	{
 		$this->load->helper('flatten');
@@ -29,50 +25,45 @@ class Sales extends CI_Controller{
 		$customerid = $this->input->post('customer');
 		$company = $this->input->post('company');
 		$employee_id = $this->input->post('employee');
-		
 		$ins = array(
 			'date' => $date,
 			'customerid' => $customerid,
 			'date_created' => date('Y-m-d'),
 			'companyid' => $company,
-			'employee_id' => $employee_id,
-			
-		);
+			'employee_id' => $employee_id);
 		$this->db->insert('sales', $ins);
-
 		$id=$this->db->insert_id();
-
+		$productid[] = $this->input->post('product');
+		$quantity[] = $this->input->post('quantity');
+		$price[] = $this->input->post('price');
+		$productid_extract_value = array_values_recursive($productid);
+		$quantity_extract_value = array_values_recursive($quantity);
+		$price_extract_value = array_values_recursive($price);
+		$subtitudeInventory = mergeArrays($id,$productid_extract_value,$quantity_extract_value,$price_extract_value);
+		foreach($subtitudeInventory as $row)
+		{
+			$inventory_row = $this->db->get_where('inventory',array('companyid'=>$company,'productid'=>$row['productid']))->row();
+			$total = $inventory_row->qty - $row['qty'];
+			$update = array(
+				'qty'=>$total);
+			$this->db->update('inventory', $update, array('id' => $inventory_row->id));
+			$this->db->insert('sales_item',$row);
+		}
 		$installment_date = $this->input->post('installment_date');
 		$amount = $this->input->post('amount');
 		$next_installment = $this->input->post('next_installment');
 		$next_amount = $this->input->post('next_amount');
+		($this->Sales_model->sales_total($id) <= $amount) ? $status='finish': $status='pending';
 		$insert_installment = array(
 			'salesid'=>$id,
 			'paid'=>$amount,
 			'date'=>$installment_date,
 			'next_installment'=> $next_installment,
+			'status' => $status,
 		);
 		$this->db->insert('installment',$insert_installment);
-
-		$productid[] = $this->input->post('product');
-		$quantity[] = $this->input->post('quantity');
-		$price[] = $this->input->post('price');
-		$i = 0;
-		$j = 0;
-		$k = 0;
-		$one = array_values_recursive($productid);
-		$two = array_values_recursive($quantity);
-		$three = array_values_recursive($price);
-		
-		$result = mergeArrays($id,$one,$two,$three);
-		
-		foreach($result as $row)
-		{
-			$this->db->insert('sales_item',$row);
-		}
 		redirect('Sales/index');
 	}
-
 	public function show()
 	{
 		$this->load->view('header');
@@ -80,11 +71,47 @@ class Sales extends CI_Controller{
 		$this->load->view('sales/show');
 		$this->load->view('footer');
 	}
-
+	public function pdf() 
+	{
+		$id = $this->uri->segment(3);
+		$row = $this->db->get_where('sales', array('id' => $id))->row();
+		$this->load->library('pdfgenerator');
+		$data['row']=$row;
+		$html = $this->load->view('sales/sales_pdf', $data, true);
+		$filename = 'sales_report_'.$row->date.time();
+		$this->pdfgenerator->generate($html, $filename, true, 'A4', 'portrait');
+	}
+	public function installment()
+	{
+		$this->load->view('header');
+		$this->load->view('sidebar');
+		$this->load->view('sales/installment');
+		$this->load->view('footer');
+	}
+	public function updateInstallment()
+	{
+		$salesid = $this->input->post('salesid');
+		$amount = ($this->input->post('amount') >1)?$this->input->post('amount'):redirect('Sales/index');
+		$date = $this->input->post('installment_date');
+		$row = $this->db->get_where('installment',array('salesid' =>$salesid))->row();
+		$paid = $row->paid;
+		$paid += $amount;
+		if($paid >= $this->Sales_model->sales_total($salesid)){
+			$update = array(
+				'next_installment' => $date,
+				'paid' => $paid,
+				'status' => 'finish');
+			$this->db->update('installment', $update, array('id' => $row->id));
+		}
+		$update = array(
+			'next_installment' => $date,
+			'paid' => $paid);
+		$this->db->update('installment', $update, array('id' => $row->id));
+		redirect('Sales/index');
+	}
 	public function fetch_data()
 	{
 		$data = $_POST['companyId'];
-		
 		$table = $this->db->get_where('employee', array('companyId' => $data))->result();
 		$result = "";
 		foreach($table as $row){
@@ -93,14 +120,12 @@ class Sales extends CI_Controller{
 		echo $result;
         
 	}
-
 	public function change_quantity()
 	{
 		$quantity = $_POST['quantity1'];
 		$productId = $_POST['productId'];
 		$companyId = $_POST['companyId'];
 		$row = $this->db->get_where('inventory', array('companyid' => $companyId,'productid'=>$productId))->row();
-		
 		if(!empty($row))
 		{
 			if($quantity <= $row->qty){
@@ -127,17 +152,27 @@ class Sales extends CI_Controller{
 
 	public function addItem()
 	{
+		$post_product_id = $this->input->post('productId');
+		$post_array = $this->input->post('send_array');
 		$data = $_POST['i'];
 		$priceText = 'price';
+		$quantityText = "quantityId";
+		$constant = '$(this).attr("id")';
+		if(!empty($post_array))
+		{
+			$integerIDs = array_map('intval', explode(',', $post_array));
+			
+		}else{
+			$integerIDs = $post_product_id;
+		}
+		$this->db->where_not_in('id',$integerIDs);
 		$product = $this->db->get('product')->result();
 		$options ='';
-		
 		if(!empty($product)){
 			foreach($product as $row){
 				$options .= '<option value="'.$row->id.'">'.$row->name.'</option>';
 			}
-		}
-		
+		}		
 		echo '<div id="deleteItem_'.$data.'">
 		<div class="col-md-6" >
 			<div class="row">
@@ -145,7 +180,7 @@ class Sales extends CI_Controller{
 					<div class="form-group">
 						<div class="form-group">
                             <label>Product</label>
-                        <select class="form-control" name="product[]" id="productId">
+                        <select class="form-control selectpicker" name="product[]" id="productId_'.$data.'">
                             '.$options.'
                             
                         </select>
@@ -185,6 +220,7 @@ class Sales extends CI_Controller{
 		$(document).ready(function(){ 
 		$("#deleteButton_'.$data.'").click(function () {
 			$("#deleteItem_'.$data.'").remove();
+
 		var i=1;
 		var qty;
 		var pp;
@@ -204,38 +240,80 @@ class Sales extends CI_Controller{
 		{
 			for(i=1; i<=count; i++)
 			{
-				
-				qty = parseInt($("#quantityId"+i).val());
+				qty = parseInt($("#quantityId"+count).val());
 				a = parseInt(qty);
-				pp = parseInt($("#price"+i).val());
+				pp = parseInt($("#price"+count).val());
 				b = parseInt(pp);
 				sum += (a*b);
-			}
+			}			
+			$("#total").html(sum);
+		}else{
 			
-			
+			for(i=1; i<=count; i++)
+			{
+				qty = parseInt($("#quantityId"+count).val());
+				
+				a = parseInt(qty);
+				pp = parseInt($("#price"+count).val());
+				b = parseInt(pp);
+				sum += (a*b);
+			}			
 			$("#total").html(sum);
 		}
 			
+	    var mysum=0; 
+		var massiv = new Array();
+		$("#myForm").find("input[id*='.$quantityText.']").each(function(i,val){
+			var string = $(this).attr("id");
+			massiv.push(string.substr(10,1));
+			var totalsum=0; 
+			$.each(massiv, function (index, value)  
+			{  				
+				qty = parseInt($("#quantityId"+value).val());
+				
+				a = parseInt(qty);
+				pp = parseInt($("#price"+value).val());
+				b = parseInt(pp);
+				mysum+=(a*b);
+				totalsum+=mysum; 
+				mysum=0; 
+				console.log(totalsum);
+			});  
+			
+			$("#total").html(totalsum);
+
 		});
 	});
-
-
+});
+	
+    // After deleting item, adding new item
+	$(document).change(function(){
+		var mysum=0; 
+		var massiv = new Array();
+		$("#myForm").find("input[id*='.$quantityText.']").each(function(){
+			var string = $(this).attr("id");
+			massiv.push(string.substr(10,1));
+			var totalsum=0; 
+			$.each(massiv, function (index, value)  
+			{  				
+				qty = parseInt($("#quantityId"+value).val());
+				
+				a = parseInt(qty);
+				pp = parseInt($("#price"+value).val());
+				b = parseInt(pp);
+				mysum+=(a*b);
+				totalsum+=mysum; 
+				mysum=0; 
+				console.log(totalsum);
+			});  
 			
-		</script>
-	';
-        
-	}
-
-
-
-
-
-
-
-
-
-	function viewSales(){
+			$("#total").html(totalsum);
+		});
 		
+	});
+	
+	</script>
+';     
 	}
 	function generateinvoice(){
 		$this->load->view('header');

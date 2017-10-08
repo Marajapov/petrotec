@@ -16,84 +16,26 @@
 		$('.datepicker').datepicker({
 			format: 'yyyy-mm-dd',
 		});
-		// datepicker_sales
 		$('.datepicker_sales').datepicker({
 			format: 'yyyy-mm-dd',
 		});
 		$('.datepicker_from').datepicker({
 			format: 'yyyy-mm-dd',
-			startDate: new Date(),
+			setDate: 'new Date()',
 		}).on('changeDate', function(e) {
-            // Revalidate the date field
             $('#eventForm').formValidation('revalidateField', 'request_from');
         });
-		
-		
-		/*
-
-
-		// From
-		$('.datepicker_from').datepicker({
+		$('.datepicker_installment').datepicker({
 			format: 'yyyy-mm-dd',
-			startDate: new Date(),
-		}).on('changeDate', function(e) {
-            // Revalidate the date field
-            $('#eventForm').formValidation('revalidateField', 'request_from');
-        });
-		// To
-		$('.datepicker_to').datepicker({
-			format: 'yyyy-mm-dd',
-			minDate: moment(),
-			startDate: '+1d',
-		}).on('changeDate', function(e) {
-            // Revalidate the date field
-            $('#eventForm').formValidation('revalidateField', 'request_to');
-        });
-
-		$('#eventForm').formValidation({
-			framework: 'bootstrap',
-			icon: {
-				valid: 'glyphicon glyphicon-ok',
-				invalid: 'glyphicon glyphicon-remove',
-				validating: 'glyphicon glyphicon-refresh'
-			},
-			fields: {
-				name: {
-					validators: {
-						notEmpty: {
-							message: 'The name is required'
-						}
-					}
-				},
-				date: {
-					validators: {
-						notEmpty: {
-							message: 'The date is required'
-						},
-						date: {
-							format: 'MM/DD/YYYY',
-							message: 'The date is not a valid'
-						}
-					}
-				}
-			}
-		});  
-		
-		
-		
-		*/
-
-
-
+			setDate: new Date(),
+			autoclose: true
+		});
 	});
 	$(function () {
 		$('[data-toggle="tooltip"]').tooltip()
 	});
-
-	// Added by Abakan start
 	$(document).ready(function(){
 		$('.request_other').prop(':checked');
-		
 		$('.request_other').change(function() {
 			if($(this).is(":checked")) {
 				$( ".request_other_text" ).prop( "disabled", false );
@@ -101,16 +43,14 @@
 				$('.request_other_text').prop('disabled',true);  
 			}    
 		});
-		// Yes No
-$( document ).ready(function() {
-        <?php if(isset($row->request_doctor_yes) && ($row->request_doctor_yes == 1)) {?>
+	$( document ).ready(function() {
+		<?php if(isset($row->request_doctor_yes) && ($row->request_doctor_yes == 1)) {?>
 			$('.request_doctor_no').prop('disabled', true);
 		<?php } ?>
-		
 		<?php if(isset($row->request_doctor_no) && ($row->request_doctor_no == 1)) {?>
 			$('.request_doctor_yes').prop('disabled', true);
 		<?php } ?>
-    });
+		});
 		$('.request_doctor_yes').change(function() {
 			if($(this).is(":checked")) {
 				$( ".request_doctor_no" ).prop( "disabled", true );
@@ -124,56 +64,47 @@ $( document ).ready(function() {
 			}else{
 				$( ".request_doctor_yes" ).prop( "disabled", false );
 			}
-			      
+					
 		});
-		
 	});
-
     $('#register').validator();
-    $(document).ready(function(){ 
-		var companyId = $('companyId').val();
-		if(!companyId){
-			$('#quantity').prop('disabled');
-		}
-	});
-
-	// change supplier
+	// Change Company
 	$(document).ready(function(){ 
+		
 		$("#companyId").change(function(){ 
-		var companyId = $(this).val(); 
-		var dataString = "companyId="+companyId;
-
-		$.ajax({ 
-			type: "POST", 
-			url: "<?= base_url('Sales/fetch_data'); ?>", 
-			data: dataString, 
-			success: function(result){
-				if(result != '')
-				{
-					$("#employee_select").html(result);
-					$("#quantityId1").removeAttr('disabled');
-					$("#productId_1").removeAttr('disabled');
-					$("#price1").removeAttr('disabled');
-					$("#hideAddButton").removeClass('hide');
-				}else{
-					$("#quantityId1").prop('disabled', function(i, v) { return !v; });
-					$("#productId_1").prop('disabled', function(i, v) { return !v; });
-					$("#price1").prop('disabled', function(i, v) { return !v; });
-					$("#hideAddButton").addClass('hide');
-					$('#employee_select').html(result);
+			var companyId = $(this).val(); 
+			var dataString = "companyId="+companyId;
+			$.ajax({ 
+				type: "POST", 
+				url: "<?= base_url('Sales/fetch_data'); ?>", 
+				data: dataString, 
+				success: function(result){
+					if(result != '')
+					{
+						$("#employee_select").html(result);
+						$("#quantityId1").removeAttr('disabled');
+						$("#productId_1").removeAttr('disabled');
+						$("#price1").removeAttr('disabled');
+						$("#employee_select").removeAttr('disabled');
+						$("#hideAddButton").removeClass('hide');
+					}else{
+						$("#quantityId1").prop('disabled', function(i, v) { return !v; });
+						$("#productId_1").prop('disabled', function(i, v) { return !v; });
+						$("#price1").prop('disabled', function(i, v) { return !v; });
+						$("#employee_select").prop('disabled', function(i, v) { return !v; });
+						$("#hideAddButton").addClass('hide');
+						$('#employee_select').html(result);
+					}
 				}
-			}
-		});
-
+			});
 		});
 	});
 	// quantity value
-	 $('#quantityId1').on('input',function(e){
-		 var productId = $('#productId_1').val();
-		 var companyId = $('#companyId').val();
+	 $("#quantityId1").on("input",function(e){
+		 var productId = $("#productId_1").val();
+		 var companyId = $("#companyId").val();
 		 var quantity1 = $(this).val(); 
 		 var dataString = "quantity1="+quantity1+"&productId="+productId+"&companyId="+companyId;
-
 		if(companyId != 0)
 		{
 			$.ajax({ 
@@ -181,7 +112,7 @@ $( document ).ready(function() {
 				url: "<?= base_url('Sales/change_quantity'); ?>", 
 				data: dataString, 
 				success: function(result){
-					$('#quantity_show').addClass('show');
+					$("#quantity_show").addClass("show");
 					$("#quantity_show").html(result);
 				}
 			}); // End Ajax
@@ -198,7 +129,7 @@ $( document ).ready(function() {
 		var a,b;
 		var sum = 0;
 		var count = $("input[id*='price']").length;
-		
+		console.log(count+" tut");
 		if(count == 1){
 			quantity = $("#quantityId1").val();
 			price = $("#price1").val();
@@ -213,30 +144,47 @@ $( document ).ready(function() {
 				pp = parseInt($("#price"+i).val());
 				b = parseInt(pp);
 				sum += (a*b);
-				//console.log(qty,pp,typeof(b),count,sum);
+				
 			}
 			
 			$("#total").html(sum);
 		}
 
     });
-
-
-
 	// Add Item
 	$(document).ready(function(){ 
 		var i = 1;
+		var j = 1;
 		var productId = 0;
-		var number = 0;
-		var pr = $('#productId_'+i).val();
+		var productId = 0;
+		var pr = 0;
+		var test = 0;
+		var result = 0;
+		var send_array = [];
+		var every_id = 0;
 		
-		number = parseInt(pr);
-		//console.log(typeof(number),number);
 		$('#addItem').click(function () {
+			var count = $("input[id*='price']").length;
+			var count_products = $("select[name*='product']").length;
+			var count_products_fromdb = $("#count_product_fromdb").val();
+			if(count <= 1)
+			{
+				pr = $('#productId_1').val();
+				productId = parseInt(pr);
+			}else{
+				for(j=1; j<=count; j++)
+				{
+					every_id = $('#productId_'+j).val();
+					variable = parseInt(every_id);
+					send_array.push(variable);
+					
+				}
+				pr = $('#productId_'+i).val();
+				productId = parseInt(pr);
+			}
 			i++;
-			productId = number;
 			var url = "<?= base_url('Sales/addItem'); ?>";
-			var dataString = 'i='+i+'&productId='+productId;
+			var dataString = 'i='+i+'&productId='+productId+'&send_array='+send_array;
 			$.ajax
 			({
 				type: "POST",
@@ -245,7 +193,11 @@ $( document ).ready(function() {
 				cache: false,
 				success: function (data) {
 					$('.newProduct').append(data);
-					//$('.selectpicker').selectpicker('refresh');
+					var productId_1 = parseInt($('#productId_1').val());
+					var total = parseInt(productId_1 + count_products);
+					
+
+		
 				}
 			});
 		});

@@ -2,6 +2,13 @@
 	function __construct(){
 		parent::__construct();
 	}
+	function viewInventory()
+	{
+		$this->load->view('header');
+		$this->load->view('sidebar');
+		$this->load->view('inventory/viewInventory');
+		$this->load->view('footer');
+	}
 	function allproduct(){
 		$this->load->view('header');
 		$this->load->view('sidebar');

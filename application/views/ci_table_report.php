@@ -94,7 +94,7 @@
                             <td><?=$row->department;?></td>
                         </tr>
                         <tr>
-                            <td>Do No:</td>
+                            <td>DOC No:</td>
                             <td>HR-DOC-00<?= $row->id;?></td>
                         </tr>
                         <tr>

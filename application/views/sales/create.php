@@ -20,15 +20,15 @@ hr {
 }
 </style>
 <?php
-$customer = $this->db->get('customer')->result();
-$company = $this->db->get('company')->result();
-$supplier = $this->db->get('supplier')->result();
-$product = $this->db->get('product')->result();
+	$customer = $this->db->get('customer')->result();
+	$company = $this->db->get('company')->result();
+	$supplier = $this->db->get('supplier')->result();
+	$product = $this->db->get('product')->result();
 ?>
-
-
 <?= form_open_multipart(base_url('Sales/store')); ?>
-<div style="padding:10px 180px; width:100%">
+<div style="padding:10px 180px; width:100%" id="myForm">
+
+	<input type="hidden" id="count_product_fromdb" value="<?=count($product);?>">
 	<h4>Add</h4>
 	<br />
     <div class="row">
@@ -45,7 +45,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Customer</label>
-                        <select class="form-control" name="customer">
+                        <select class="form-control" name="customer" required>
                             <?php if(!empty($customer)):
                                 foreach($customer as $c): ?>
                                     <option value="<?= $c->id; ?>"><?= $c->fname; ?></option>
@@ -69,7 +69,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Quantity</label>
-                        <input type="text" id="quantityId1" name="quantity[]" class="form-control" disabled />
+                        <input type="text" id="quantityId1" name="quantity[]" class="form-control" disabled required/>
                         
 					</div>
 				</div>
@@ -81,8 +81,8 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Company</label>
-                        <select class="form-control" name="company" id="companyId">
-                            <option value="0">--Select--</option>
+                        <select class="form-control" name="company" id="companyId" required>
+                            <option value="">--Select--</option>
                             <?php if(!empty($company)):
                                 foreach($company as $c): ?>
                                     <option value="<?= $c->id; ?>"><?= $c->company_name; ?></option>
@@ -93,7 +93,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Sales Person</label>
-						<select class="form-control selectpicker" name="employee" id="employee_select">
+						<select class="form-control selectpicker" name="employee" id="employee_select" disabled>
 						</select>
 					</div>
 				</div>
@@ -102,7 +102,7 @@ $product = $this->db->get('product')->result();
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Price</label>
-				        <input type="text" name="price[]" class="form-control" id="price1" disabled/>
+				        <input type="text" name="price[]" class="form-control" id="price1" disabled required/>
 					</div>
 				</div>
 				<div class="col-md-6">
@@ -122,7 +122,7 @@ $product = $this->db->get('product')->result();
 			<div class="row" >
 				<div class="col-md-2 off-set-10 pull-right hide" id="hideAddButton">
 					<label>Add Item</label>
-	<input type="button" value="addItem" id="addItem" class="form-control btn btn-info" />
+	<input type="button" value="addItem" id="addItem" data-info="1" class="form-control btn btn-info" />
 				</div>
 			</div>
 		</div>
@@ -135,8 +135,7 @@ $product = $this->db->get('product')->result();
 			<div class="row">
 				<div class="col-md-2 off-set-10 pull-right">
 					<label for="">Total</label>
-					<div class="span" id="total"></div>
-					<div class="span" id="showcase"></div>
+					<div class="span" id="total">0</div>
 				</div>
 			</div>
 		</div>
@@ -151,7 +150,7 @@ $product = $this->db->get('product')->result();
 					<div class="form-group">
 						<div class="form-group">
                             <label>Date:</label>
-                            <input name="installment_date" type="text" class="form-control form-control-lg datepicker_from" id="lgFormGroupInput" >
+                            <input name="installment_date" required type="text" class="form-control form-control-lg datepicker_from" id="lgFormGroupInput" >
                         </div>
 					</div>
 				</div>
@@ -160,7 +159,7 @@ $product = $this->db->get('product')->result();
 					<div class="form-group">
 						<div class="form-group">
                             <label>Amount:</label>
-                            <input name="amount" type="text" class="form-control form-control-lg" id="lgFormGroupInput" >
+                            <input name="amount" type="text" required class="form-control form-control-lg" id="lgFormGroupInput" >
                         </div>
 					</div>
 				</div>
@@ -177,14 +176,7 @@ $product = $this->db->get('product')->result();
 					</div>
 				</div>
 
-				<div class="col-md-4">
-					<div class="form-group">
-						<div class="form-group">
-                            <label>Rest:</label>
-                            <input name="next_amount" type="text" class="form-control form-control-lg" id="lgFormGroupInput" >
-                        </div>
-					</div>
-				</div>
+				
 			</div>
 
 		</div>
